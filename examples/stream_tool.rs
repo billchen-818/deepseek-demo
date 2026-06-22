@@ -1,78 +1,12 @@
 use anyhow::Result;
 use futures_util::StreamExt;
-use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
+use deepseek_demo::{
+    ChatRequest, ChatResponse, Choice, FunctionCall, FunctionDef, Message, Tool, ToolCall,
+};
+
 const DEEPSEEK_API_URL: &str = "https://api.deepseek.com/chat/completions";
-
-// ═══════════════════════════════════════════
-//  数据结构
-// ═══════════════════════════════════════════
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct Message {
-    pub role: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub content: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_calls: Option<Vec<ToolCall>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_call_id: Option<String>,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct Tool {
-    #[serde(rename = "type")]
-    pub tool_type: String,
-    pub function: FunctionDef,
-}
-
-#[derive(Debug, Serialize, Clone)]
-pub struct FunctionDef {
-    pub name: String,
-    pub description: String,
-    pub parameters: serde_json::Value,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct ToolCall {
-    pub id: String,
-    #[serde(rename = "type")]
-    pub call_type: String,
-    pub function: FunctionCall,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct FunctionCall {
-    pub name: String,
-    pub arguments: String,
-}
-
-#[derive(Debug, Serialize)]
-pub struct ChatRequest {
-    pub model: String,
-    pub messages: Vec<Message>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub stream: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub temperature: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub max_tokens: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub tools: Option<Vec<Tool>>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct ChatResponse {
-    pub choices: Vec<Choice>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct Choice {
-    pub message: Message,
-    #[serde(default)]
-    pub finish_reason: Option<String>,
-}
 
 // ═══════════════════════════════════════════
 //  API 调用（非流式 + 流式）
