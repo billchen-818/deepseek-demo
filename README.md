@@ -5,6 +5,9 @@ export DEEPSEEK_API_KEY=sk-xxxxxxxx
 cargo run
 ```
 
+`cargo run` 会启动一个记忆 + 多轮命令行 Agent。每次启动都会创建一个新的
+`agent_sessions/session_<timestamp>/memory.json`，用于保存本次会话的长期记忆。
+
 ## Examples
 
 ```shell
